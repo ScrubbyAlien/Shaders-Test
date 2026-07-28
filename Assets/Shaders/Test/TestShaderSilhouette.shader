@@ -10,15 +10,15 @@ Shader "Custom/TestShaderSilhouette"
         Tags
         {
             "RenderPipeline" = "UniversalPipeline"
-            "RenderType" = "Opaque"
-            "Queue" = "Geometry"
+            "RenderType" = "Transparent"
+            "Queue" = "Transparent"
         }
 
         Pass
         {
 
-            ZWrite On
-            ZTest LEqual
+            //            ZWrite On
+            //            ZTest LEqual
 
             HLSLPROGRAM
             #pragma vertex Vertex
@@ -45,16 +45,17 @@ Shader "Custom/TestShaderSilhouette"
 
             VertexOutput Vertex(VertexInput input) {
                 VertexOutput output = (VertexOutput)0;
-                output.positionClip = TransformObjectToHClip(input.positionLocal);
-                output.positionScreen = ComputeScreenPos(input.positionLocal);
+                output.positionClip = TransformObjectToHClip(input.positionLocal.xyz);
+                output.positionScreen = ComputeScreenPos(output.positionClip);
                 return output;
             }
 
             half4 Fragment(VertexOutput output) : SV_Target {
                 float2 screenUV = output.positionScreen.xy / output.positionScreen.w;
                 float rawDepth = SampleSceneDepth(screenUV);
+                float linearDepth = Linear01Depth(rawDepth, _ZBufferParams);
 
-                return lerp(_ForegroundColor, _BackgroundColor, rawDepth);
+                return lerp(_ForegroundColor, _BackgroundColor, linearDepth);
             }
             ENDHLSL
         }

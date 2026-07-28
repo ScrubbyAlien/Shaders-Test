@@ -16,6 +16,14 @@ Shader "Custom/TestShaderTexture"
 
         Pass
         {
+            Tags
+            {
+                "LightMode" = "SRPDefaultUnlit"
+            }
+
+            ZWrite On
+            ZTest LEqual
+
             HLSLPROGRAM
             #pragma vertex Vertex
             #pragma fragment Fragment
@@ -55,6 +63,83 @@ Shader "Custom/TestShaderTexture"
             }
             ENDHLSL
         }
+
+        Pass
+        {
+            Tags
+            {
+                "LightMode" = "DepthOnly"
+            }
+
+            ZWrite On
+            ColorMask R
+
+            HLSLPROGRAM
+            #pragma vertex depthOnlyVert
+            #pragma fragment depthOnlyFrag
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            struct VertexInput {
+                float4 positionLocal : POSITION;
+            };
+
+            struct VertexOutput {
+                float4 positionClip : SV_POSITION;
+            };
+
+            VertexOutput depthOnlyVert(VertexInput input) {
+                VertexOutput output;
+                output.positionClip = TransformObjectToHClip(input.positionLocal.xyz);
+                return output;
+            }
+
+            float depthOnlyFrag(VertexOutput output) {
+                return output.positionClip.z;
+            }
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Tags
+            {
+                "LightMode" = "DepthNormals"
+            }
+
+            ZWrite On
+
+            HLSLPROGRAM
+            #pragma vertex depthNormalsVertex
+            #pragma fragment depthNormalsFragment
+
+            #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+            struct VertexInput {
+                float4 positionLocal : POSITION;
+                float3 normalLocal : NORMAL;
+            };
+
+            struct VertexOutput {
+                float4 positionClip : SV_POSITION;
+                float3 normalWorld : TEXCOORD0;
+            };
+
+            VertexOutput depthNormalsVertex(VertexInput input) {
+                VertexOutput output;
+                output.positionClip = TransformObjectToHClip(input.positionLocal.xyz);
+                float3 normalWorld = TransformObjectToWorldNormal(input.normalLocal);
+                output.normalWorld = NormalizeNormalPerVertex(normalWorld);
+                return output;
+            }
+
+            float depthNormalsFragment(VertexOutput output) {
+                float3 normalWorld = NormalizeNormalPerPixel(output.normalWorld);
+                return float4(normalWorld, .0);
+            }
+            ENDHLSL
+        }
+
     }
 
 
