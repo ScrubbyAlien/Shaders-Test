@@ -1,21 +1,26 @@
+using NaughtyAttributes;
 using UnityEngine;
 
 public class CubeGrid : MonoBehaviour
 {
     [SerializeField]
-    private Vector2 size;
+    private Vector2Int size;
 
-    
+    [SerializeField]
+    private GameObject cubePrefab;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [Button]
+    private void Create() {
+        for (int i = 0; i < transform.childCount; i++) {
+            DestroyImmediate(transform.GetChild(i).gameObject);
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        for (int x = 0; x < size.x; x++) {
+            for (int y = 0; y < size.y; y++) {
+                Vector3 position = new Vector3(x, 0, y);
+                GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);
+                cube.transform.parent = transform;
+            }
+        }
     }
 }
