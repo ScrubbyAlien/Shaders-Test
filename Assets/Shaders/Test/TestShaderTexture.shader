@@ -94,7 +94,7 @@ Shader "Custom/TestShaderTexture"
                 return output;
             }
 
-            float depthOnlyFrag(VertexOutput output) {
+            float depthOnlyFrag(VertexOutput output) : SV_Target {
                 return output.positionClip.z;
             }
             ENDHLSL
@@ -133,7 +133,7 @@ Shader "Custom/TestShaderTexture"
                 return output;
             }
 
-            float depthNormalsFragment(VertexOutput output) {
+            float depthNormalsFragment(VertexOutput output) : SV_Target {
                 float3 normalWorld = NormalizeNormalPerPixel(output.normalWorld);
                 return float4(normalWorld, .0);
             }
