@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GrassTopSide
+  m_Name: InverseGrassTopSide
   m_Shader: {fileID: 4800000, guid: 61eec64e3f3c4394cb00091f7d3b7d29, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
@@ -24,7 +24,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: ce43f0bf4abed7c4881dfc9da7b5cf0c, type: 3}
+        m_Texture: {fileID: 2800000, guid: 9b9b4a192dd59db4b83902c831728728, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTexture:
@@ -32,7 +32,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _SideTexture:
-        m_Texture: {fileID: 2800000, guid: 9b9b4a192dd59db4b83902c831728728, type: 3}
+        m_Texture: {fileID: 2800000, guid: ce43f0bf4abed7c4881dfc9da7b5cf0c, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _TopTexture:

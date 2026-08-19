@@ -3,7 +3,7 @@ Shader "Custom/TopSideCubeShader"
     Properties
     {
         _BaseColor("BaseColor", Color) = (1, 1, 1, 1)
-        _TopTexture("Top Texture", 2D) = "white" {}
+        _MainTex("Top Texture", 2D) = "white" {}
         _SideTexture("Side Texture", 2D) = "white" {}
     }
     SubShader
@@ -33,13 +33,13 @@ Shader "Custom/TopSideCubeShader"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
-                float4 _TopTexture_ST;
+                float4 _MainTex_ST;
                 float4 _SideTexture_ST;
             CBUFFER_END
 
-            TEXTURE2D(_TopTexture);
+            TEXTURE2D(_MainTex);
             TEXTURE2D(_SideTexture);
-            SAMPLER(sampler_TopTexture);
+            SAMPLER(sampler_MainTex);
             SAMPLER(sampler_SideTexture);
 
             struct VertexInput { // geometry vertex attributes: normal, color, uv, etc.
@@ -62,7 +62,7 @@ Shader "Custom/TopSideCubeShader"
                 float3 normalWorld = TransformObjectToWorld(input.normalLocal);
                 output.normalWorld = NormalizeNormalPerVertex(normalWorld);
                 if (output.normalWorld.y > 0) {
-                    output.uv = TRANSFORM_TEX(input.uv, _TopTexture);
+                    output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 }
                 else {
                     output.uv = TRANSFORM_TEX(input.uv, _SideTexture);
@@ -73,7 +73,7 @@ Shader "Custom/TopSideCubeShader"
             half4 Fragment(VertexOutput output) : SV_Target {
                 float4 textureColor;
                 if (output.normalWorld.y > 0) {
-                    textureColor = SAMPLE_TEXTURE2D(_TopTexture, sampler_TopTexture, output.uv);
+                    textureColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, output.uv);
                 }
                 else {
                     textureColor = SAMPLE_TEXTURE2D(_SideTexture, sampler_SideTexture, output.uv);

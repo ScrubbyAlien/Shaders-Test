@@ -1,26 +1,33 @@
 using NaughtyAttributes;
 using UnityEngine;
+using UnityEngine.Tilemaps;
 
 public class CubeGrid : MonoBehaviour
 {
     [SerializeField]
-    private Vector2Int size;
+    private CubeGridMap cubeGridMap;
 
-    [SerializeField]
-    private GameObject cubePrefab;
-
-    [Button]
+    private void Start() {
+        Create();
+    }
+    
     private void Create() {
-        for (int i = 0; i < transform.childCount; i++) {
-            DestroyImmediate(transform.GetChild(i).gameObject);
-        }
+        float xOffset = -0.5f + cubeGridMap.mapSize.x / 2f;
+        float yOffset = -0.5f + cubeGridMap.mapSize.y / 2f;
+        Vector2Int min = cubeGridMap.minPosition;
 
-        for (int x = 0; x < size.x; x++) {
-            for (int y = 0; y < size.y; y++) {
-                Vector3 position = new Vector3(x, 0, y);
-                GameObject cube = Instantiate(cubePrefab, position, Quaternion.identity);
-                cube.transform.parent = transform;
-            }
+        foreach (var (tile, pos) in cubeGridMap.AllTilesCompressed()) {
+            Vector3 position = new Vector3(pos.x - min.x - xOffset, 0, pos.y - min.y - yOffset);
+            GameObject cube = CreateObjectFromTile(position, tile);
         }
+        
+    }
+
+    private GameObject CreateObjectFromTile(Vector3 position, CubeGridTile tile) {
+        GameObject cube = new GameObject("CubeTile");
+        cube.AddComponent<MeshFilter>().sharedMesh = tile.mesh;
+        cube.AddComponent<MeshRenderer>().sharedMaterial = tile.material;
+        cube.transform.position = position;
+        return cube;
     }
 }
