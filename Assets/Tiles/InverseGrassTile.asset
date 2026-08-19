@@ -14,3 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   material: {fileID: 2100000, guid: 0dbe259cda9fdfb4ab9bd01f5af58850, type: 2}
   mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  gizmoColor: {r: 0.90943396, g: 0.7915244, b: 0.24537553, a: 1}
