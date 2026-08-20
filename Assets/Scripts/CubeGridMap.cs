@@ -22,16 +22,16 @@ public class CubeGridMap : MonoBehaviour
         }
     }
     
-    public IEnumerable<(CubeGridTile, Vector3)> AllTilesCompressed() {
+    public IEnumerable<(CubeGridTile, Vector3Int)> AllTilesCompressed() {
         tilemap.CompressBounds();
         BoundsInt bounds = tilemap.cellBounds;
         for (int x = bounds.xMin; x < bounds.xMax; x++) {
             for (int y = bounds.yMin; y < bounds.yMax; y++) {
                 Vector3Int pos = new Vector3Int(x, y);
                 CubeGridTile tile = tilemap.GetTile<CubeGridTile>(pos);
-                float height = heightMap.GetTile<CubeGridHeightTile>(pos)?.height ?? 0;
+                int height = heightMap.GetTile<CubeGridHeightTile>(pos)?.height ?? 0;
                 if (!tile) continue;
-                yield return (tile, new Vector3(pos.x, pos.y, height));
+                yield return (tile, new Vector3Int(pos.x, pos.y, height));
             }   
         }
     }
