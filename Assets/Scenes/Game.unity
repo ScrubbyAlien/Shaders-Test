@@ -270,6 +270,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cubeGridMap: {fileID: 2669828844843880865, guid: ba96a25058a58f44fa0b478640c6fd69, type: 3}
+  heightScale: 0.3
 --- !u!4 &949814594
 Transform:
   m_ObjectHideFlags: 0
@@ -371,13 +372,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1732578504}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.27781588, y: -0.36497167, z: 0.1150751, w: 0.8811196}
+  m_LocalRotation: {x: 0.27011627, y: -0.36596197, z: 0.11188581, w: 0.8835104}
   m_LocalPosition: {x: 10, y: 10, z: -10}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 35, y: -45, z: 0}
+  m_LocalEulerAnglesHint: {x: 34, y: -45, z: 0}
 --- !u!114 &1732578508
 MonoBehaviour:
   m_ObjectHideFlags: 0

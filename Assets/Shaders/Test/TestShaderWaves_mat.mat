@@ -29,12 +29,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.687
-    - _Frequency: 1
-    - _TessellationAmount: 30
+    - _Amplitude: 0.37
+    - _Frequency: 1.82
+    - _TessellationAmount: 64
     - _TessellationFadeEnd: 50
     - _TessellationFadeStart: 25
+    - _WaveLength: 0.95
     m_Colors:
-    - _BaseColor: {r: 0.27700236, g: 0.55797505, b: 0.94716984, a: 1}
+    - _BaseColor: {r: 0, g: 0.32432973, b: 0.78113204, a: 1}
+    - _CrestColor: {r: 0.26981127, g: 0.6041306, b: 1, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

@@ -52,16 +52,15 @@ Shader "Custom/TopSideCubeShader"
 
             struct VertexOutput { // transformed data
                 float4 positionClip : SV_POSITION;
-                float3 normalWorld : NORMAL;
+                float3 normalLocal : NORMAL;
                 float2 uv : TEXCOORD0;
             };
 
             VertexOutput Vertex(VertexInput input) {
                 VertexOutput output = (VertexOutput)0;
                 output.positionClip = TransformObjectToHClip(input.positionLocal);
-                float3 normalWorld = TransformObjectToWorld(input.normalLocal);
-                output.normalWorld = NormalizeNormalPerVertex(normalWorld);
-                if (output.normalWorld.y > 0) {
+                output.normalLocal = input.normalLocal;
+                if (output.normalLocal.y > 0.5) {
                     output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 }
                 else {
@@ -72,7 +71,7 @@ Shader "Custom/TopSideCubeShader"
 
             half4 Fragment(VertexOutput output) : SV_Target {
                 float4 textureColor;
-                if (output.normalWorld.y > 0) {
+                if (output.normalLocal.y > 0.5) {
                     textureColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, output.uv);
                 }
                 else {

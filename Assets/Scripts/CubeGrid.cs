@@ -7,6 +7,8 @@ public class CubeGrid : MonoBehaviour
 {
     [SerializeField]
     private CubeGridMap cubeGridMap;
+    [SerializeField]
+    private float heightScale = 0.1f;
     
     private float xOffset => -0.5f + cubeGridMap.mapSize.x / 2f;
     private float yOffset => -0.5f + cubeGridMap.mapSize.y / 2f;
@@ -23,8 +25,11 @@ public class CubeGrid : MonoBehaviour
         }
     }
 
-    private Vector3 GetCenteredPosition(Vector2 tilemapPosition) {
-        return new Vector3(tilemapPosition.x - min.x - xOffset, 0, tilemapPosition.y - min.y - yOffset);
+    private Vector3 GetCenteredPosition(Vector3 tilemapPosition) {
+        return new Vector3(
+            tilemapPosition.x - min.x - xOffset, 
+            tilemapPosition.z * heightScale, 
+            tilemapPosition.y - min.y - yOffset);
     }
     
     private GameObject CreateObjectFromTile(Vector3 position, CubeGridTile tile) {
