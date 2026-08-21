@@ -686,6 +686,7 @@ GameObject:
   m_Component:
   - component: {fileID: 949814594}
   - component: {fileID: 949814593}
+  - component: {fileID: 949814595}
   m_Layer: 0
   m_Name: Grid
   m_TagString: Untagged
@@ -706,6 +707,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cubeGridMap: {fileID: 2669828844843880865, guid: ba96a25058a58f44fa0b478640c6fd69, type: 3}
+  baseCubeCellPrefab: {fileID: 3516293580961954888, guid: 89da8f660346755499f86e8c047b914a, type: 3}
   heightScale: 0.3
 --- !u!4 &949814594
 Transform:
@@ -722,6 +724,21 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &949814595
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 949814592}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 083fcaf8c95042c45af87171ef988cab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 128
 --- !u!1 &1120728081
 GameObject:
   m_ObjectHideFlags: 0

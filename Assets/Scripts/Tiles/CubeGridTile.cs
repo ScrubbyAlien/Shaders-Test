@@ -5,7 +5,6 @@ using UnityEngine.Tilemaps;
 public class CubeGridTile : TileBase
 {
     public Material material;
-    public Mesh mesh;
     public Color gizmoColor = Color.white;
 
     public override void GetTileData(Vector3Int position, ITilemap tilemap, ref TileData tileData) {

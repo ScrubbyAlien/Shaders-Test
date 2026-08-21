@@ -9,28 +9,29 @@ public class CubeGrid : MonoBehaviour
     [SerializeField]
     private CubeGridMap cubeGridMap;
     [SerializeField]
+    private CubeGridCell baseCubeCellPrefab;
+    [SerializeField]
     private float heightScale;
     
     private float xOffset => -0.5f + cubeGridMap.mapSize.x / 2f;
     private float yOffset => -0.5f + cubeGridMap.mapSize.y / 2f;
     private Vector2Int min => cubeGridMap.minPosition;
 
-    private CubeCell[,] cubeCells;
+    private CubeGridCell[,] cubeCells;
     
     private void Start() {
         Create();
     }
-    
+
     private void Create() {
         Vector3Int size = cubeGridMap.tilemap.cellBounds.size;
         Vector3Int min = cubeGridMap.tilemap.cellBounds.min;
-        cubeCells = new CubeCell[size.x, size.y];
+        cubeCells = new CubeGridCell[size.x, size.y];
         foreach (var (tile, pos) in cubeGridMap.AllTilesCompressed()) {
             Vector3 worldPosition = GetCenteredPosition(pos);
-            Vector3Int normalizedCellPosition = pos - min;
-            GameObject cube = CreateObjectFromTile(worldPosition, tile);
-            CubeCell cell = new CubeCell(cube, pos);
-            cubeCells[normalizedCellPosition.x, normalizedCellPosition.y] = cell;
+            Vector3Int cellPosition = pos - min;
+            CubeGridCell cell = CreateCellFromTile(worldPosition, cellPosition, tile);
+            cubeCells[cellPosition.x, cellPosition.y] = cell;
         }
     }
 
@@ -41,13 +42,12 @@ public class CubeGrid : MonoBehaviour
             tilemapPosition.y - min.y - yOffset);
     }
     
-    private GameObject CreateObjectFromTile(Vector3 position, CubeGridTile tile) {
-        GameObject cube = new GameObject("CubeTile");
-        cube.AddComponent<MeshFilter>().sharedMesh = tile.mesh;
-        cube.AddComponent<MeshRenderer>().sharedMaterial = tile.material;
-        cube.transform.position = position;
-        cube.layer = LayerMask.NameToLayer("ground");
-        return cube;
+    private CubeGridCell CreateCellFromTile(Vector3 position, Vector3Int cellPosition, CubeGridTile tile) {
+        CubeGridCell cell = Instantiate(baseCubeCellPrefab, transform);
+        cell.transform.position = position;
+        cell.gameObject.name = $"CubeTile_({cellPosition.x},{cellPosition.y} - h:{cellPosition.z})";
+        cell.Initialize(this, cellPosition, tile);
+        return cell;
     }
 
     private void OnDrawGizmos() {
@@ -55,17 +55,6 @@ public class CubeGrid : MonoBehaviour
             Vector3 position = GetCenteredPosition(pos);
             Gizmos.color = tile.gizmoColor;
             Gizmos.DrawCube(position, Vector3.one * 0.99f);
-        }
-    }
-
-    private class CubeCell
-    {
-        public GameObject cubeObject;
-        public Vector3Int gridPosition;
-        
-        public CubeCell(GameObject cubeObject, Vector3Int gridPosition) {
-            this.cubeObject = cubeObject;
-            this.gridPosition = gridPosition;
         }
     }
 }
