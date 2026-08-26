@@ -4,7 +4,7 @@ Shader "Custom/CharacterShader"
     {
         _BaseColor("BaseColor", Color) = (1, 1, 1, 1)
         _BaseTexture("Base Texture", 2DArray) = "white" {}
-        _Index("Index", Float) = 0
+        _Index("Index", Int) = 0
     }
     SubShader
     {
