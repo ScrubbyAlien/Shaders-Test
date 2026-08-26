@@ -57,4 +57,26 @@ public class CubeGrid : MonoBehaviour
             Gizmos.DrawCube(position, Vector3.one * 0.99f);
         }
     }
+    
+    private static readonly Vector2Int[] neighbours = {
+        new Vector2Int(1, 0),
+        new Vector2Int(0, 1),
+        new Vector2Int(-1, 0),
+        new Vector2Int(0, 1),
+    };
+
+    private bool CoordInBounds(Vector3Int coord) {
+        if (coord.x < 0 || coord.x >= cubeCells.GetLength(0)) return false;
+        if (coord.y < 0 || coord.y >= cubeCells.GetLength(1)) return false;
+        return true;
+    }
+    
+    public CubeGridCell GetCell(Vector3Int coord) {
+        if (!CoordInBounds(coord)) return null;
+        return cubeCells[coord.x, coord.y];
+    }
+    
+    // public List<CubeGridCell> GetNeighbours(Vector3Int coord) {
+    //      
+    // }
 }
