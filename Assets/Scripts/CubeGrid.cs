@@ -71,12 +71,22 @@ public class CubeGrid : MonoBehaviour
         return true;
     }
     
-    public CubeGridCell GetCell(Vector3Int coord) {
-        if (!CoordInBounds(coord)) return null;
-        return cubeCells[coord.x, coord.y];
+    public bool GetCell(Vector3Int coord, out CubeGridCell cell) {
+        cell = null;
+        if (!CoordInBounds(coord)) return false;
+        cell = cubeCells[coord.x, coord.y];
+        if (!cell) return false;
+        return true;
     }
     
-    // public List<CubeGridCell> GetNeighbours(Vector3Int coord) {
-    //      
-    // }
+    public IEnumerable<CubeGridCell> GetNeighbours(Vector3Int coord) {
+        foreach (Vector2Int neighbourOffset in neighbours) {
+            Vector3Int neighbourCoord = coord + (Vector3Int)neighbourOffset;
+            if (CoordInBounds(neighbourCoord)) {
+                if (GetCell(neighbourCoord, out CubeGridCell neighbourCell)) {
+                    yield return neighbourCell;
+                }
+            }
+        }
+    }
 }

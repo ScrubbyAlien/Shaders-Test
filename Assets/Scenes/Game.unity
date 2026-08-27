@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gridNavigator: {fileID: 949814595}
-  highlightMode: 0
+  highlightMode: 1
 --- !u!4 &346745107
 Transform:
   m_ObjectHideFlags: 0
@@ -799,6 +799,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   unitPrefab: {fileID: 1138236380968447277, guid: 1de2db61d7e282e448db9bcda68eb0f4, type: 3}
   gridNavigator: {fileID: 949814595}
+  highlightManager: {fileID: 346745106}
   unitPositionOffset: 0.6
 --- !u!4 &843808905
 Transform:

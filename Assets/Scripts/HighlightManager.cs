@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class HighlightManager : MonoBehaviour
@@ -28,5 +30,17 @@ public class HighlightManager : MonoBehaviour
     private enum HighlightMode
     {
         HighlightHovered, NoHighlight
+    }
+
+    public void DehighlightGroup(IEnumerable<CubeGridCell> cells) {
+        foreach (CubeGridCell cell in cells) {
+            cell.Dehighlight();
+        }
+    }
+    
+    public void HighlightGroup(IEnumerable<CubeGridCell> cells) {
+        foreach (CubeGridCell cell in cells) {
+            cell.Highlight();
+        }
     }
 }

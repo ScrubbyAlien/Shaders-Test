@@ -9,15 +9,22 @@ public class UnitManager : MonoBehaviour
     [SerializeField]
     private CubeGridNavigator gridNavigator;
     [SerializeField]
+    private HighlightManager highlightManager;
+    [SerializeField]
     private float unitPositionOffset;
 
     private Transform currentUnit;
+    private Vector3Int lastPlacedUnitCoord;
+    private List<CubeGridCell> lastHighlightedCells;
 
     private List<Transform> activeUnits;
     
     private void Start() {
         currentUnit = InstantiateUnit();
         activeUnits = new();
+        lastHighlightedCells = new();
+        
+        gridNavigator.NewCellHovered += DrawPath;
     }
 
     private void Update() {
@@ -29,12 +36,23 @@ public class UnitManager : MonoBehaviour
         currentUnit.transform.position = gridNavigator.currentCell.SurfaceCenter() + Vector3.up * unitPositionOffset;
 
         if (Input.GetMouseButtonDown(0)) {
+            if (activeUnits.Count > 0) return;
             activeUnits.Add(currentUnit);
-            currentUnit = InstantiateUnit();
+            lastPlacedUnitCoord = gridNavigator.currentCell.cellIndexInGrid;
+            // currentUnit = InstantiateUnit();
         }
     }
 
     private Transform InstantiateUnit() {
         return Instantiate(unitPrefab, Vector3.one * -1000, unitPrefab.rotation);
+    }
+
+    private void DrawPath(CubeGridCell oldCell, CubeGridCell newCell) {
+        if (activeUnits.Count == 0) return;
+        if (!newCell) return;
+        List<CubeGridCell> pathToNewCell = gridNavigator.CalculatePath(lastPlacedUnitCoord, newCell.cellIndexInGrid);
+        highlightManager.DehighlightGroup(lastHighlightedCells);
+        highlightManager.HighlightGroup(pathToNewCell);
+        lastHighlightedCells = pathToNewCell;
     }
 }
