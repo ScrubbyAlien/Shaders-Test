@@ -24,7 +24,7 @@ public class UnitManager : MonoBehaviour
         activeUnits = new();
         lastHighlightedCells = new();
         
-        gridNavigator.NewCellHovered += DrawPath;
+        // gridNavigator.NewCellHovered += DrawPath;
     }
 
     private void Update() {
