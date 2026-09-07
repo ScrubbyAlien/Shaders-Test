@@ -459,6 +459,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cubeGridNavigator: {fileID: 949814595}
+  grid: {fileID: 949814593}
+  bobbleTime: 0.26
+  bobbleHeight: 0.19
+  range: 3
+  propagationSpeed: 0.05
+  dampening: 0.9
 --- !u!4 &709360739
 Transform:
   m_ObjectHideFlags: 0

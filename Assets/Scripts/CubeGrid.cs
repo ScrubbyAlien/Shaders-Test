@@ -89,4 +89,19 @@ public class CubeGrid : MonoBehaviour
             }
         }
     }
+
+    public IEnumerable<CubeGridCell> GetCellsWithinRadius(Vector3Int originCellCoord, float radius) {
+        // will cause some issues of originCellCoords points to an empty space
+        Vector2 cellSurfaceCenter = cubeCells[originCellCoord.x, originCellCoord.y].XYCenter();
+        for (int x = 0; x < cubeCells.GetLength(0); x++) {
+            for (int y = 0; y < cubeCells.GetLength(1); y++) {
+                CubeGridCell cell = cubeCells[x, y];
+                if (!cell) continue;
+                float sqrDistanceToSurfaceCenter = (cell.XYCenter() - cellSurfaceCenter).sqrMagnitude;
+                if (sqrDistanceToSurfaceCenter <= radius * radius) {
+                    yield return cubeCells[x, y];
+                }                          
+            }
+        }
+    }
 }
