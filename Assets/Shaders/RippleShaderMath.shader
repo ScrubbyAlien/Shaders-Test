@@ -1,4 +1,4 @@
-Shader "Custom/TestShaderWaves"
+Shader "Custom/RippleShaderMath"
 {
     Properties
     {
@@ -8,6 +8,10 @@ Shader "Custom/TestShaderWaves"
         _Amplitude("Amplitude", Float) = 0.5
         _Frequency("Frequency", Float) = 1
         _WaveLength("Wave Length", Float) = 1
+        _Origin("Origin", Vector) = (0,0,0,0)
+        _Range("Range", Float) = 1
+        _Rate("Rate", Float) = 3
+        _SettleFactor("SettleFactor", Float) = 1
         _TessellationAmount("Tessellation Amount", Range(1, 64)) = 1
         _TessellationFadeStart("Tessellation Fade Start", Float) = 25
         _TessellationFadeEnd("Tessellation Fade End", Float) = 50
@@ -43,6 +47,10 @@ Shader "Custom/TestShaderWaves"
                 half4 _BaseColor;
                 float4 _CrestColor;
                 float4 _BaseTexture_ST;
+                float2 _Origin;
+                float _Range;
+                float _Rate;
+                float _SettleFactor;
                 float _Amplitude;
                 float _Frequency;
                 float _WaveLength;
@@ -148,8 +156,16 @@ Shader "Custom/TestShaderWaves"
                     patch[1].uv * barycentricCoords.y +
                     patch[2].uv * barycentricCoords.z;
 
-                float height = sin((positionWorld.x + positionWorld.z + _Time.y * _Frequency) / _WaveLength) *
-                    _Amplitude;
+
+                float rateTime = _Time.y % _Rate;
+                float speed = _Frequency / _WaveLength;
+                float propagationDistance = rateTime * speed;
+                float distToOrigin = distance(positionWorld.xz, _Origin);
+                float outerDampening = 1 - saturate(distToOrigin / _Range);
+                float innerDampening = 1 - saturate(
+                    abs(propagationDistance - distToOrigin) / (_SettleFactor * _WaveLength));
+                float dampening = outerDampening * innerDampening;
+                float height = sin((distToOrigin + rateTime * _Frequency) / _WaveLength) * _Amplitude * dampening;
                 float3 newPositionWorld = float3(positionWorld.x, positionWorld.y + height, positionWorld.z);
 
                 output.positionClip = TransformWorldToHClip(newPositionWorld);

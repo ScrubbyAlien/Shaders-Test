@@ -6,8 +6,8 @@ using UnityEngine;
 [RequireComponent(typeof(CubeGrid))]
 public class CubeGridNavigator : MonoBehaviour
 {
-    public event Action<CubeGridCell, CubeGridCell> NewCellHovered; 
-    
+    public event Action<CubeGridCell, CubeGridCell> NewCellHovered;
+
     private Camera oCamera;
     private Ray detectCellRay;
     [SerializeField]
@@ -16,7 +16,7 @@ public class CubeGridNavigator : MonoBehaviour
     private CubeGrid grid;
     private CubeGridCell currentlyHoveredCell;
     public CubeGridCell currentCell => currentlyHoveredCell;
-    
+
     private void Awake() {
         oCamera = Camera.main;
         grid = GetComponent<CubeGrid>();
@@ -32,7 +32,7 @@ public class CubeGridNavigator : MonoBehaviour
             if (oldCell && oldCell == hoveredCell) return;
             NewCellHovered.Invoke(oldCell, hoveredCell);
             currentlyHoveredCell = hoveredCell;
-        }                                     
+        }
         else {
             NewCellHovered.Invoke(currentlyHoveredCell, null);
             currentlyHoveredCell = null;
@@ -43,7 +43,7 @@ public class CubeGridNavigator : MonoBehaviour
         bool startExists = grid.GetCell(start, out CubeGridCell startCell);
         bool endExists = grid.GetCell(end, out CubeGridCell endCell);
         if (!endExists || !startExists) return new();
-        
+
         Dictionary<CubeGridCell, List<CubeGridCell>> frontier = new() { { startCell, new() { startCell } } };
         Dictionary<CubeGridCell, List<CubeGridCell>> visited = new();
 
@@ -55,7 +55,7 @@ public class CubeGridNavigator : MonoBehaviour
                     nextCellPath = path;
                 }
             }
-            
+
             // move from frontier to visited
             frontier.Remove(nextCell);
             visited.Add(nextCell, nextCellPath);
@@ -81,4 +81,4 @@ public class CubeGridNavigator : MonoBehaviour
 
         return new();
     }
-}                                                                             
+}
