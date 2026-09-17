@@ -8,10 +8,9 @@ Shader "Custom/RippleShaderMath"
         _Amplitude("Amplitude", Float) = 0.5
         _Frequency("Frequency", Float) = 1
         _WaveLength("Wave Length", Float) = 1
-        _Origin("Origin", Vector) = (0,0,0,0)
         _Range("Range", Float) = 1
-        _Rate("Rate", Float) = 3
-        _SettleFactor("SettleFactor", Float) = 1
+        _SettleFactor("Settle Factor", Float) = 1
+        _PropagationSpeed("Propagation Speed", Float) = 1
         _TessellationAmount("Tessellation Amount", Range(1, 64)) = 1
         _TessellationFadeStart("Tessellation Fade Start", Float) = 25
         _TessellationFadeEnd("Tessellation Fade End", Float) = 50
@@ -47,10 +46,9 @@ Shader "Custom/RippleShaderMath"
                 half4 _BaseColor;
                 float4 _CrestColor;
                 float4 _BaseTexture_ST;
-                float2 _Origin;
                 float _Range;
-                float _Rate;
                 float _SettleFactor;
+                float _PropagationSpeed;
                 float _Amplitude;
                 float _Frequency;
                 float _WaveLength;
@@ -58,6 +56,9 @@ Shader "Custom/RippleShaderMath"
                 float _TessellationFadeStart;
                 float _TessellationFadeEnd;
             CBUFFER_END
+
+            uniform float4 Origin;
+            uniform float RippleStartTime;
 
             TEXTURE2D(_BaseTexture);
             SAMPLER(sampler_BaseTexture);
@@ -157,15 +158,14 @@ Shader "Custom/RippleShaderMath"
                     patch[2].uv * barycentricCoords.z;
 
 
-                float rateTime = _Time.y % _Rate;
-                float speed = _Frequency / _WaveLength;
-                float propagationDistance = rateTime * speed;
-                float distToOrigin = distance(positionWorld.xz, _Origin);
+                float realTime = _Time.y - RippleStartTime;
+                float propagationDistance = realTime * _PropagationSpeed;
+                float distToOrigin = distance(positionWorld.xz, Origin.xz);
                 float outerDampening = 1 - saturate(distToOrigin / _Range);
                 float innerDampening = 1 - saturate(
                     abs(propagationDistance - distToOrigin) / (_SettleFactor * _WaveLength));
                 float dampening = outerDampening * innerDampening;
-                float height = sin((distToOrigin + rateTime * _Frequency) / _WaveLength) * _Amplitude * dampening;
+                float height = sin((distToOrigin + realTime * _Frequency) / _WaveLength) * _Amplitude * dampening;
                 float3 newPositionWorld = float3(positionWorld.x, positionWorld.y + height, positionWorld.z);
 
                 output.positionClip = TransformWorldToHClip(newPositionWorld);

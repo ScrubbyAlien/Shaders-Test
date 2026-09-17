@@ -32,6 +32,7 @@ Material:
     - _Amplitude: 0.51
     - _Dampening: 0.175
     - _Frequency: 2.78
+    - _PropagationSpeed: 7
     - _Range: 3
     - _Rate: 2.58
     - _SettleFactor: 1
@@ -41,7 +42,7 @@ Material:
     - _WaveLength: 0.45
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
-    - _CrestColor: {r: 1, g: 1, b: 1, a: 1}
+    - _CrestColor: {r: 0, g: 0.42166567, b: 1, a: 1}
     - _Origin: {r: 0, g: -15, b: 0, a: 0}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
