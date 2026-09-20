@@ -29,17 +29,17 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Amplitude: 0.51
+    - _Amplitude: 0.96
     - _Dampening: 0.175
-    - _Frequency: 2.78
-    - _PropagationSpeed: 7
-    - _Range: 3
+    - _Frequency: 3.5
+    - _PropagationSpeed: 6.59
+    - _Range: 3.78
     - _Rate: 2.58
-    - _SettleFactor: 1
-    - _TessellationAmount: 8.6
+    - _SettleFactor: 1.3
+    - _TessellationAmount: 19.8
     - _TessellationFadeEnd: 50
     - _TessellationFadeStart: 25
-    - _WaveLength: 0.45
+    - _WaveLength: 0.95
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _CrestColor: {r: 0, g: 0.42166567, b: 1, a: 1}
