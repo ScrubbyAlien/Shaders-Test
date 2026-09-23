@@ -7,27 +7,48 @@ using UnityEngine;
 public class EffectManager : MonoBehaviour
 {
     [SerializeField]
-    private CubeGridNavigator cubeGridNavigator;
-    [SerializeField]
-    private CubeGrid grid;
+    private Tester.RippleMode mode;
 
+    [Header("CPU")]
+    [SerializeField]
+    private CubeGrid gridCPU;
+    [SerializeField]
+    private CubeGridNavigator cubeGridNavigatorCPU;
     [SerializeField]
     private float bobbleTime, bobbleHeight, range, propagationSpeed;
     [SerializeField, Range(0f, 1f)]
     private float dampening;
 
+    [Header("GPUMath")]
+    [SerializeField]
+    private CubeGrid gridGPUMath;
+    [SerializeField]
+    private CubeGridNavigator cubeGridNavigatorGPUMath;
+    [SerializeField]
+    private Material cellRippleMath;
+
     private void Update() {
         if (Input.GetMouseButtonDown(0)) {
-            if (cubeGridNavigator.currentCell) {
-                StartCoroutine(RippleCircle(cubeGridNavigator.currentCell));
+            switch (mode) {
+                case Tester.RippleMode.CPUSort:
+                    if (cubeGridNavigatorCPU.currentCell) {
+                        StartCoroutine(RippleCircle(cubeGridNavigatorCPU.currentCell));
+                    }
+                    break;
+                case Tester.RippleMode.GPUMath:
+                    if (cubeGridNavigatorGPUMath.currentCell) {
+                        cellRippleMath.SetFloat("RippleStartTime", Time.time);
+                        cellRippleMath.SetVector("Origin", cubeGridNavigatorGPUMath.currentCell.SurfaceCenter());
+                    }
+                    break;
             }
         }
     }
 
     private IEnumerator RippleCircle(CubeGridCell originCell) {
-        List<CubeGridCell> cells = grid.GetCellsWithinRadius(originCell.cellIndexInGrid, range).ToList();
+        List<CubeGridCell> cells = gridCPU.GetCellsWithinRadius(originCell.cellIndexInGrid, range).ToList();
         WaitForSeconds propagationDelay = new WaitForSeconds(propagationSpeed);
-        
+
         cells.Sort(((cell1, cell2) => {
             float sqrDistanceToOrigin1 = (originCell.XYCenter() - cell1.XYCenter()).sqrMagnitude;
             float sqrDistanceToOrigin2 = (originCell.XYCenter() - cell2.XYCenter()).sqrMagnitude;
@@ -43,5 +64,4 @@ public class EffectManager : MonoBehaviour
             lastDistance = distance;
         }
     }
-    
 }

@@ -41,6 +41,7 @@ Shader "Custom/RippleShaderMath"
             #pragma domain Domain
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+            #include "effects.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
@@ -158,14 +159,8 @@ Shader "Custom/RippleShaderMath"
                     patch[2].uv * barycentricCoords.z;
 
 
-                float realTime = _Time.y - RippleStartTime;
-                float propagationDistance = realTime * _PropagationSpeed;
-                float distToOrigin = distance(positionWorld.xz, Origin.xz);
-                float outerDampening = 1 - saturate(distToOrigin / _Range);
-                float innerDampening = 1 - saturate(
-                    abs(propagationDistance - distToOrigin) / (_SettleFactor * _WaveLength));
-                float dampening = outerDampening * innerDampening;
-                float height = sin((distToOrigin + realTime * _Frequency) / _WaveLength) * _Amplitude * dampening;
+                float height = CalculateRippleHeight(RippleStartTime, _PropagationSpeed, _Range, _SettleFactor,
+                                                     positionWorld.xz, Origin.xz, _WaveLength, _Frequency, _Amplitude);
                 float3 newPositionWorld = float3(positionWorld.x, positionWorld.y + height, positionWorld.z);
 
                 output.positionClip = TransformWorldToHClip(newPositionWorld);

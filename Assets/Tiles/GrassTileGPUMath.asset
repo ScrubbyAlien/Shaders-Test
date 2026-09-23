@@ -10,8 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 15f7763dd229587499eb6ddc215a51c3, type: 3}
-  m_Name: GrassTile
+  m_Name: GrassTileGPUMath
   m_EditorClassIdentifier: 
-  material: {fileID: 2100000, guid: bbd81243c768c7d4e9af56805141664c, type: 2}
-  mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+  material: {fileID: 2100000, guid: 76bdaad127d738247be3e3fe7da38a2a, type: 2}
   gizmoColor: {r: 0.12941177, g: 0.17254902, b: 0.027450982, a: 1}

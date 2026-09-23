@@ -30,11 +30,11 @@ public class CubeGridNavigator : MonoBehaviour
             CubeGridCell hoveredCell = hitInfo.collider.GetComponent<CubeGridCell>();
             CubeGridCell oldCell = currentlyHoveredCell;
             if (oldCell && oldCell == hoveredCell) return;
-            NewCellHovered.Invoke(oldCell, hoveredCell);
+            NewCellHovered?.Invoke(oldCell, hoveredCell);
             currentlyHoveredCell = hoveredCell;
         }
         else {
-            NewCellHovered.Invoke(currentlyHoveredCell, null);
+            NewCellHovered?.Invoke(currentlyHoveredCell, null);
             currentlyHoveredCell = null;
         }
     }

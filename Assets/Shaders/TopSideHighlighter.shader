@@ -20,6 +20,7 @@ Shader "Custom/TopSideHighlighter"
 
         Pass
         {
+            Name "Highlight"
             Blend [_SrcBlend] [_DstBlend]
 
             HLSLPROGRAM
