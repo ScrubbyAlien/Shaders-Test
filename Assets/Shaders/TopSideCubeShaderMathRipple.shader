@@ -53,7 +53,7 @@ Shader "Custom/TopSideCubeShaderMathRipple"
             CBUFFER_END
 
             uniform float4 Origin;
-            uniform float StartTime;
+            uniform float StartTime = -1000;
 
             TEXTURE2D(_MainTex);
             TEXTURE2D(_SideTexture);
@@ -77,10 +77,10 @@ Shader "Custom/TopSideCubeShaderMathRipple"
             VertexOutput Vertex(VertexInput input) {
                 VertexOutput output = (VertexOutput)0;
 
-                float3 worldPos = TransformObjectToWorld(output.positionClip);
+                float3 worldPos = TransformObjectToWorld(input.positionLocal);
                 float rippleHeight = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, _SettleFactor,
                                                            worldPos.xz, Origin.xz, _WaveLength, _Frequency, _Amplitude);
-                float3 newWorldPos = (worldPos.x, rippleHeight, worldPos.y);
+                float3 newWorldPos = float3(worldPos.x, worldPos.y + rippleHeight, worldPos.z);
 
                 output.positionClip = TransformWorldToHClip(newWorldPos);
                 output.normalLocal = input.normalLocal;

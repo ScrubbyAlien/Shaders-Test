@@ -5,12 +5,14 @@ using UnityEngine;
 public class HighlightManager : MonoBehaviour
 {
     [SerializeField]
-    private CubeGridNavigator gridNavigator;
+    private CubeGridNavigator[] gridNavigators;
     [SerializeField]
     private HighlightMode highlightMode;
-    
+
     private void Start() {
-        gridNavigator.NewCellHovered += OnCellHovered;
+        foreach (CubeGridNavigator navigator in gridNavigators) {
+            navigator.NewCellHovered += OnCellHovered;
+        }
     }
 
     private void OnCellHovered(CubeGridCell oldCell, CubeGridCell newCell) {
@@ -29,7 +31,8 @@ public class HighlightManager : MonoBehaviour
 
     private enum HighlightMode
     {
-        HighlightHovered, NoHighlight
+        HighlightHovered,
+        NoHighlight
     }
 
     public void DehighlightGroup(IEnumerable<CubeGridCell> cells) {
@@ -37,7 +40,7 @@ public class HighlightManager : MonoBehaviour
             cell.Dehighlight();
         }
     }
-    
+
     public void HighlightGroup(IEnumerable<CubeGridCell> cells) {
         foreach (CubeGridCell cell in cells) {
             cell.Highlight();

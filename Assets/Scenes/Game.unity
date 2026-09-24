@@ -194,7 +194,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a5e14845bdb0764faba472836b24bb9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gridNavigator: {fileID: 829141185}
+  gridNavigators:
+  - {fileID: 949814595}
+  - {fileID: 829141185}
   highlightMode: 0
 --- !u!4 &346745107
 Transform:
@@ -521,7 +523,7 @@ MonoBehaviour:
   bobbleTime: 0.26
   bobbleHeight: 0.19
   range: 3
-  propagationSpeed: 0.05
+  propagationSpeed: 0.02
   dampening: 0.9
   gridGPUMath: {fileID: 829141186}
   cubeGridNavigatorGPUMath: {fileID: 829141185}

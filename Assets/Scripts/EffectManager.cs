@@ -37,7 +37,7 @@ public class EffectManager : MonoBehaviour
                     break;
                 case Tester.RippleMode.GPUMath:
                     if (cubeGridNavigatorGPUMath.currentCell) {
-                        cellRippleMath.SetFloat("RippleStartTime", Time.time);
+                        cellRippleMath.SetFloat("StartTime", Time.time);
                         cellRippleMath.SetVector("Origin", cubeGridNavigatorGPUMath.currentCell.SurfaceCenter());
                     }
                     break;

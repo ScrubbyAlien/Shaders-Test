@@ -89,7 +89,7 @@ Material:
     - _AddPrecomputedVelocity: 0
     - _AlphaClip: 0
     - _AlphaToMask: 0
-    - _Amplitude: 0.5
+    - _Amplitude: 1.26
     - _Blend: 0
     - _BlendModePreserveSpecular: 1
     - _BumpScale: 1
@@ -102,25 +102,25 @@ Material:
     - _DstBlend: 0
     - _DstBlendAlpha: 0
     - _EnvironmentReflections: 1
-    - _Frequency: 1
+    - _Frequency: 3.75
     - _GlossMapScale: 0
     - _Glossiness: 0
     - _GlossyReflections: 0
     - _Metallic: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.005
-    - _PropagationSpeed: 1
+    - _PropagationSpeed: 12
     - _QueueOffset: 0
-    - _Range: 1
+    - _Range: 4
     - _ReceiveShadows: 1
-    - _SettleFactor: 1
+    - _SettleFactor: 1.57
     - _Smoothness: 0.5
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _SrcBlendAlpha: 1
     - _Surface: 0
-    - _WaveLength: 1
+    - _WaveLength: 0.28
     - _WorkflowMode: 1
     - _ZWrite: 1
     m_Colors:
