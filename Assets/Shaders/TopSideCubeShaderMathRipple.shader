@@ -51,12 +51,11 @@ Shader "Custom/TopSideCubeShaderMathRipple"
             CBUFFER_END
 
             uniform float4 Origin;
-            uniform float StartTime = -1000;
+            uniform float StartTime;
 
             TEXTURE2D(_MainTex);
             TEXTURE2D(_SideTexture);
             SAMPLER(sampler_MainTex);
-            SAMPLER(sampler_SideTexture);
 
             struct VertexInput { // geometry vertex attributes: normal, color, uv, etc.
                 // vertex position in local space
@@ -77,17 +76,12 @@ Shader "Custom/TopSideCubeShaderMathRipple"
 
                 float3 worldPos = TransformObjectToWorld(input.positionLocal);
                 float rippleHeight = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, worldPos.xz, Origin.xz,
-                                                           _Frequency, _Amplitude);
+                                                           _Frequency, _Amplitude, 0.7);
                 float3 newWorldPos = float3(worldPos.x, worldPos.y + rippleHeight, worldPos.z);
 
                 output.positionClip = TransformWorldToHClip(newWorldPos);
                 output.normalLocal = input.normalLocal;
-                if (output.normalLocal.y > 0.5) {
-                    output.uv = TRANSFORM_TEX(input.uv, _MainTex);
-                }
-                else {
-                    output.uv = TRANSFORM_TEX(input.uv, _SideTexture);
-                }
+                output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 return output;
             }
 
@@ -97,7 +91,7 @@ Shader "Custom/TopSideCubeShaderMathRipple"
                     textureColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, output.uv);
                 }
                 else {
-                    textureColor = SAMPLE_TEXTURE2D(_SideTexture, sampler_SideTexture, output.uv);
+                    textureColor = SAMPLE_TEXTURE2D(_SideTexture, sampler_MainTex, output.uv);
                 }
                 return textureColor * _BaseColor;
             }

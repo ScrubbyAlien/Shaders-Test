@@ -160,7 +160,7 @@ Shader "Custom/RippleShaderMath"
 
 
                 float height = CalculateRippleHeight(RippleStartTime, _PropagationSpeed, _Range,
-                                                     positionWorld.xz, Origin.xz, _Frequency, _Amplitude);
+                                                     positionWorld.xz, Origin.xz, _Frequency, _Amplitude, 0);
                 float3 newPositionWorld = float3(positionWorld.x, positionWorld.y + height, positionWorld.z);
 
                 output.positionClip = TransformWorldToHClip(newPositionWorld);

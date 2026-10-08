@@ -40,7 +40,6 @@ Shader "Custom/TopSideCubeShader"
             TEXTURE2D(_MainTex);
             TEXTURE2D(_SideTexture);
             SAMPLER(sampler_MainTex);
-            SAMPLER(sampler_SideTexture);
 
             struct VertexInput { // geometry vertex attributes: normal, color, uv, etc.
                 // vertex position in local space
@@ -60,12 +59,7 @@ Shader "Custom/TopSideCubeShader"
                 VertexOutput output = (VertexOutput)0;
                 output.positionClip = TransformObjectToHClip(input.positionLocal);
                 output.normalLocal = input.normalLocal;
-                if (output.normalLocal.y > 0.5) {
-                    output.uv = TRANSFORM_TEX(input.uv, _MainTex);
-                }
-                else {
-                    output.uv = TRANSFORM_TEX(input.uv, _SideTexture);
-                }
+                output.uv = TRANSFORM_TEX(input.uv, _MainTex);
                 return output;
             }
 
@@ -75,7 +69,7 @@ Shader "Custom/TopSideCubeShader"
                     textureColor = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, output.uv);
                 }
                 else {
-                    textureColor = SAMPLE_TEXTURE2D(_SideTexture, sampler_SideTexture, output.uv);
+                    textureColor = SAMPLE_TEXTURE2D(_SideTexture, sampler_MainTex, output.uv);
                 }
                 return textureColor * _BaseColor;
             }

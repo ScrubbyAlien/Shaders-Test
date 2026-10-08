@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+[ExecuteAlways]
 public class EffectManager : MonoBehaviour
 {
     [SerializeField]
@@ -14,6 +15,8 @@ public class EffectManager : MonoBehaviour
     private CubeGrid gridCPU;
     [SerializeField]
     private CubeGridNavigator cubeGridNavigatorCPU;
+    [SerializeField]
+    private RippleParams CPUSortParams;
     [SerializeField]
     private float bobbleTime, bobbleHeight, range, propagationSpeed;
     [SerializeField, Range(0f, 1f)]
@@ -27,7 +30,13 @@ public class EffectManager : MonoBehaviour
     [SerializeField]
     private CubeGridTile tileGPUMath;
 
+    private bool validated;
+
     private void OnValidate() {
+        validated = true;
+    }
+
+    private void SetCorrectGridActive() {
         gridCPU.gameObject.SetActive(false);
         gridGPUMath.gameObject.SetActive(false);
 
@@ -40,7 +49,15 @@ public class EffectManager : MonoBehaviour
         activeGrid.gameObject.SetActive(true);
     }
 
+    private void Start() {
+        tileGPUMath.material.SetFloat("StartTime", -1000);
+    }
+
     private void Update() {
+        if (validated) {
+            SetCorrectGridActive();
+            validated = false;
+        }
         if (Input.GetMouseButtonDown(0)) {
             switch (mode) {
                 case Tester.RippleMode.CPUSort:
@@ -60,7 +77,6 @@ public class EffectManager : MonoBehaviour
 
     private IEnumerator RippleCircle(CubeGridCell originCell) {
         List<CubeGridCell> cells = gridCPU.GetCellsWithinRadius(originCell.cellIndexInGrid, range).ToList();
-        WaitForSeconds propagationDelay = new WaitForSeconds(propagationSpeed);
 
         cells.Sort(((cell1, cell2) => {
             float sqrDistanceToOrigin1 = (originCell.XYCenter() - cell1.XYCenter()).sqrMagnitude;
@@ -69,12 +85,25 @@ public class EffectManager : MonoBehaviour
         }));
 
         float lastDistance = 0f;
-        cells[0].Bobble(bobbleTime, bobbleHeight);
+        float bobbleTime = 1 / (CPUSortParams.frequency * Mathf.PI);
+        cells[0].Bobble(bobbleTime, CPUSortParams.amplitude);
         for (int i = 1; i < cells.Count; i++) {
             float distance = (originCell.XYCenter() - cells[i].XYCenter()).sqrMagnitude;
-            if (distance != lastDistance) yield return propagationDelay;
-            cells[i].Bobble(bobbleTime, bobbleHeight * Mathf.Pow(dampening, distance));
+            if (distance != lastDistance) {
+                float difference = distance - lastDistance;
+                yield return new WaitForSeconds(difference / (CPUSortParams.propagationSpeed * Mathf.PI));
+            }
+            cells[i].Bobble(bobbleTime, CPUSortParams.amplitude);
             lastDistance = distance;
         }
+    }
+
+    [Serializable]
+    private struct RippleParams
+    {
+        public float amplitude;
+        public float frequency;
+        public float range;
+        public float propagationSpeed;
     }
 }

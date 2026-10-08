@@ -169,18 +169,12 @@ Shader "Custom/TopSideCubeShaderMathRippleTess"
                     patch[2].normalLocal * barycentricCoords.z;
 
                 float height = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, positionWorld.xz, Origin.xz,
-                                                     _Frequency, _Amplitude);
+                                                     _Frequency, _Amplitude, 0);
                 float3 newPositionWorld = float3(positionWorld.x, positionWorld.y + height, positionWorld.z);
 
                 output.positionClip = TransformWorldToHClip(newPositionWorld);
                 output.normalLocal = normalLocal;
-                if (normalLocal.y > 0.5) {
-                    output.uv = TRANSFORM_TEX(uv, _MainTexture);
-                }
-                else {
-                    output.uv = TRANSFORM_TEX(uv, _SideTexture);
-                }
-
+                output.uv = TRANSFORM_TEX(uv, _MainTexture);
                 return output;
             }
 

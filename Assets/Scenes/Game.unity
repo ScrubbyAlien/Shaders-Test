@@ -517,9 +517,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 690bc2f7312b54c4298327887db4a58a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  mode: 1
+  mode: 0
   gridCPU: {fileID: 949814593}
   cubeGridNavigatorCPU: {fileID: 949814595}
+  CPUSortParams:
+    amplitude: 0.3
+    frequency: 1.5
+    range: 4
+    propagationSpeed: 12
   bobbleTime: 0.26
   bobbleHeight: 0.3
   range: 4
@@ -899,7 +904,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &829141185
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -962,7 +967,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &949814593
 MonoBehaviour:
   m_ObjectHideFlags: 0
