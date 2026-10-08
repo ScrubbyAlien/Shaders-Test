@@ -1,19 +1,20 @@
-Shader "Custom/RippleShaderMath"
+Shader "Custom/TopSideCubeShaderMathRippleTess"
 {
     Properties
     {
-        _BaseColor("Base Color", Color) = (1, 1, 1, 1)
-        _CrestColor("Crest Color", Color) = (1, 1, 1, 1)
-        _BaseTexture("Base Texture", 2D) = "white" {}
+        _BaseColor("BaseColor", Color) = (1, 1, 1, 1)
+        _MainTexture("Top Texture", 2D) = "white" {}
+        _SideTexture("Side Texture", 2D) = "white" {}
+
+        [Header(Ripple Settings)] [Space]
         _Amplitude("Amplitude", Float) = 0.5
         _Frequency("Frequency", Float) = 1
-        _WaveLength("Wave Length", Float) = 1
         _Range("Range", Float) = 1
-        _SettleFactor("Settle Factor", Float) = 1
         _PropagationSpeed("Propagation Speed", Float) = 1
+
+        [Space]
+        [Header(Tessallation Settings)] [Space]
         _TessellationAmount("Tessellation Amount", Range(1, 64)) = 1
-        _TessellationFadeStart("Tessellation Fade Start", Float) = 25
-        _TessellationFadeEnd("Tessellation Fade End", Float) = 50
     }
     SubShader
     {
@@ -44,35 +45,34 @@ Shader "Custom/RippleShaderMath"
             #include "effects.hlsl"
 
             CBUFFER_START(UnityPerMaterial)
-                half4 _BaseColor;
-                float4 _CrestColor;
-                float4 _BaseTexture_ST;
+                float4 _BaseColor;
+                float4 _MainTexture_ST;
+                float4 _SideTexture_ST;
                 float _Range;
-                float _SettleFactor;
                 float _PropagationSpeed;
                 float _Amplitude;
                 float _Frequency;
-                float _WaveLength;
                 float _TessellationAmount;
-                float _TessellationFadeStart;
-                float _TessellationFadeEnd;
             CBUFFER_END
 
             uniform float4 Origin;
-            uniform float RippleStartTime;
+            uniform float StartTime;
 
-            TEXTURE2D(_BaseTexture);
-            SAMPLER(sampler_BaseTexture);
+            TEXTURE2D(_MainTexture);
+            TEXTURE2D(_SideTexture);
+            SAMPLER(sampler_MainTexture);
 
             struct VertexInput { // geometry vertex attributes: normal, color, uv, etc.
                 // vertex position in local space
                 // POSITION semantic tells cpu where to look for data
                 float3 positionLocal : POSITION;
+                float3 normalLocal : NORMAL;
                 float2 uv : TEXCOORD0;
             };
 
             struct TessControlPoint {
                 float3 positionWorld : INTERNALTESSPOS;
+                float3 normalLocal : NORMAL;
                 float2 uv : TEXCOORD0;
             };
 
@@ -83,17 +83,18 @@ Shader "Custom/RippleShaderMath"
 
             struct TessellationOutput { // transformed data
                 float4 positionClip : SV_POSITION;
+                float3 normalLocal : NORMAL;
                 float2 uv : TEXCOORD0;
-                float normalizedY : NORMALIZED_Y;
             };
 
             TessControlPoint Vertex(VertexInput input) {
-                TessControlPoint output = (TessControlPoint)0;
+                TessControlPoint control_point = (TessControlPoint)0;
 
-                output.positionWorld = TransformObjectToWorld(input.positionLocal.xyz);
-                output.uv = TRANSFORM_TEX(input.uv, _BaseTexture);
+                control_point.positionWorld = TransformObjectToWorld(input.positionLocal.xyz);
+                control_point.normalLocal = input.normalLocal;
+                control_point.uv = TRANSFORM_TEX(input.uv, _MainTexture);
 
-                return output;
+                return control_point;
             }
 
             [domain("tri")]
@@ -108,32 +109,36 @@ Shader "Custom/RippleShaderMath"
             TessFactors PatchConstantFunc(InputPatch<TessControlPoint, 3> patch) {
                 TessFactors factors = (TessFactors)0;
 
-                float3 triPos0 = patch[0].positionWorld;
-                float3 triPos1 = patch[1].positionWorld;
-                float3 triPos2 = patch[2].positionWorld;
+                // float3 triPos0 = patch[0].positionWorld;
+                // float3 triPos1 = patch[1].positionWorld;
+                // float3 triPos2 = patch[2].positionWorld;
+                //
+                // // calculate halfway points along edges
+                // float3 edgePos0 = 0.5f * (triPos1 + triPos2);
+                // float3 edgePos1 = 0.5f * (triPos0 + triPos2);
+                // float3 edgePos2 = 0.5f * (triPos0 + triPos1);
+                //
+                // float3 camPos = _WorldSpaceCameraPos;
 
-                // calculate halfway points along edges
-                float3 edgePos0 = 0.5f * (triPos1 + triPos2);
-                float3 edgePos1 = 0.5f * (triPos0 + triPos2);
-                float3 edgePos2 = 0.5f * (triPos0 + triPos1);
-
-                float3 camPos = _WorldSpaceCameraPos;
-
-                float dist0 = distance(edgePos0, camPos);
-                float dist1 = distance(edgePos1, camPos);
-                float dist2 = distance(edgePos2, camPos);
-
-                float fadeDist = _TessellationFadeEnd - _TessellationFadeStart;
-
-                // clamp tesselation factor between 1 and 0 inside tesselation fade range
-                float edgeFactor0 = saturate(1.0f - (dist0 - _TessellationFadeStart) / fadeDist);
-                float edgeFactor1 = saturate(1.0f - (dist1 - _TessellationFadeStart) / fadeDist);
-                float edgeFactor2 = saturate(1.0f - (dist2 - _TessellationFadeStart) / fadeDist);
+                // float dist0 = distance(edgePos0, camPos);
+                // float dist1 = distance(edgePos1, camPos);
+                // float dist2 = distance(edgePos2, camPos);
+                //
+                // float fadeDist = _TessellationFadeEnd - _TessellationFadeStart;
+                //
+                // // clamp tesselation factor between 1 and 0 inside tesselation fade range
+                // float edgeFactor0 = saturate(1.0f - (dist0 - _TessellationFadeStart) / fadeDist);
+                // float edgeFactor1 = saturate(1.0f - (dist1 - _TessellationFadeStart) / fadeDist);
+                // float edgeFactor2 = saturate(1.0f - (dist2 - _TessellationFadeStart) / fadeDist);
 
                 // ensure tesselation factor is at least 1, otherwise trianlge will disappear
-                factors.edge[0] = max(edgeFactor0 * _TessellationAmount, 1);
-                factors.edge[1] = max(edgeFactor1 * _TessellationAmount, 1);
-                factors.edge[2] = max(edgeFactor2 * _TessellationAmount, 1);
+                float effectEndTime = StartTime + _Range / _PropagationSpeed;
+                float inProgress = step(_Time.y, effectEndTime);
+
+                // ensure tesselation factor is at least 1, otherwise trianlge will disappear
+                factors.edge[0] = max(inProgress * _TessellationAmount, 1);
+                factors.edge[1] = max(inProgress * _TessellationAmount, 1);
+                factors.edge[2] = max(inProgress * _TessellationAmount, 1);
 
                 factors.inside = ((factors.edge[0] + factors.edge[1] + factors.edge[2]) / 3.0f);
 
@@ -158,21 +163,36 @@ Shader "Custom/RippleShaderMath"
                     patch[1].uv * barycentricCoords.y +
                     patch[2].uv * barycentricCoords.z;
 
+                float3 normalLocal =
+                    patch[0].normalLocal * barycentricCoords.x +
+                    patch[1].normalLocal * barycentricCoords.y +
+                    patch[2].normalLocal * barycentricCoords.z;
 
-                float height = CalculateRippleHeight(RippleStartTime, _PropagationSpeed, _Range,
-                                                     positionWorld.xz, Origin.xz, _Frequency, _Amplitude);
+                float height = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, positionWorld.xz, Origin.xz,
+                                                     _Frequency, _Amplitude);
                 float3 newPositionWorld = float3(positionWorld.x, positionWorld.y + height, positionWorld.z);
 
                 output.positionClip = TransformWorldToHClip(newPositionWorld);
-                output.uv = uv;
-                output.normalizedY = (height + 1.0f) / 2.0f;
+                output.normalLocal = normalLocal;
+                if (normalLocal.y > 0.5) {
+                    output.uv = TRANSFORM_TEX(uv, _MainTexture);
+                }
+                else {
+                    output.uv = TRANSFORM_TEX(uv, _SideTexture);
+                }
 
                 return output;
             }
 
             half4 Fragment(TessellationOutput output) : SV_Target {
-                float4 textureColor = SAMPLE_TEXTURE2D(_BaseTexture, sampler_BaseTexture, output.uv);
-                return textureColor * lerp(_BaseColor, _CrestColor, output.normalizedY);
+                float4 textureColor;
+                if (output.normalLocal.y > 0.5) {
+                    textureColor = SAMPLE_TEXTURE2D(_MainTexture, sampler_MainTexture, output.uv);
+                }
+                else {
+                    textureColor = SAMPLE_TEXTURE2D(_SideTexture, sampler_MainTexture, output.uv);
+                }
+                return textureColor * _BaseColor;
             }
             ENDHLSL
         }

@@ -25,7 +25,20 @@ public class EffectManager : MonoBehaviour
     [SerializeField]
     private CubeGridNavigator cubeGridNavigatorGPUMath;
     [SerializeField]
-    private Material cellRippleMath;
+    private CubeGridTile tileGPUMath;
+
+    private void OnValidate() {
+        gridCPU.gameObject.SetActive(false);
+        gridGPUMath.gameObject.SetActive(false);
+
+        CubeGrid activeGrid = mode switch {
+            Tester.RippleMode.CPUSort => gridCPU,
+            Tester.RippleMode.GPUMath => gridGPUMath,
+            _ => gridCPU
+        };
+
+        activeGrid.gameObject.SetActive(true);
+    }
 
     private void Update() {
         if (Input.GetMouseButtonDown(0)) {
@@ -37,8 +50,8 @@ public class EffectManager : MonoBehaviour
                     break;
                 case Tester.RippleMode.GPUMath:
                     if (cubeGridNavigatorGPUMath.currentCell) {
-                        cellRippleMath.SetFloat("StartTime", Time.time);
-                        cellRippleMath.SetVector("Origin", cubeGridNavigatorGPUMath.currentCell.SurfaceCenter());
+                        tileGPUMath.material.SetFloat("StartTime", Time.time);
+                        tileGPUMath.material.SetVector("Origin", cubeGridNavigatorGPUMath.currentCell.SurfaceCenter());
                     }
                     break;
             }

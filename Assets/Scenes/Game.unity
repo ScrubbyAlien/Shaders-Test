@@ -197,7 +197,7 @@ MonoBehaviour:
   gridNavigators:
   - {fileID: 949814595}
   - {fileID: 829141185}
-  highlightMode: 0
+  highlightMode: 1
 --- !u!4 &346745107
 Transform:
   m_ObjectHideFlags: 0
@@ -521,13 +521,13 @@ MonoBehaviour:
   gridCPU: {fileID: 949814593}
   cubeGridNavigatorCPU: {fileID: 949814595}
   bobbleTime: 0.26
-  bobbleHeight: 0.19
-  range: 3
-  propagationSpeed: 0.02
+  bobbleHeight: 0.3
+  range: 4
+  propagationSpeed: 0.04
   dampening: 0.9
   gridGPUMath: {fileID: 829141186}
   cubeGridNavigatorGPUMath: {fileID: 829141185}
-  cellRippleMath: {fileID: 2100000, guid: 76bdaad127d738247be3e3fe7da38a2a, type: 2}
+  tileGPUMath: {fileID: 11400000, guid: d59bf1c9e1e5af84dbf8c2aef196a5c3, type: 2}
 --- !u!4 &709360739
 Transform:
   m_ObjectHideFlags: 0

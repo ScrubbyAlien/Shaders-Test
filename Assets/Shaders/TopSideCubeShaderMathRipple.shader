@@ -9,9 +9,7 @@ Shader "Custom/TopSideCubeShaderMathRipple"
         [Header(Ripple Settings)] [Space]
         _Amplitude("Amplitude", Float) = 0.5
         _Frequency("Frequency", Float) = 1
-        _WaveLength("Wave Length", Float) = 1
         _Range("Range", Float) = 1
-        _SettleFactor("Settle Factor", Float) = 1
         _PropagationSpeed("Propagation Speed", Float) = 1
     }
     SubShader
@@ -78,8 +76,8 @@ Shader "Custom/TopSideCubeShaderMathRipple"
                 VertexOutput output = (VertexOutput)0;
 
                 float3 worldPos = TransformObjectToWorld(input.positionLocal);
-                float rippleHeight = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, _SettleFactor,
-                                                           worldPos.xz, Origin.xz, _WaveLength, _Frequency, _Amplitude);
+                float rippleHeight = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, worldPos.xz, Origin.xz,
+                                                           _Frequency, _Amplitude);
                 float3 newWorldPos = float3(worldPos.x, worldPos.y + rippleHeight, worldPos.z);
 
                 output.positionClip = TransformWorldToHClip(newWorldPos);
