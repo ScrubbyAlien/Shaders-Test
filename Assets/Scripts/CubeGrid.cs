@@ -18,6 +18,8 @@ public class CubeGrid : MonoBehaviour
     private Vector2Int min => cubeGridMap.minPosition;
 
     private CubeGridCell[,] cubeCells;
+
+    public Vector2 size => (Vector2Int)cubeGridMap.tilemap.cellBounds.size;
     
     private void Start() {
         Create();

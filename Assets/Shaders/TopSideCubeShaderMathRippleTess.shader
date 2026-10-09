@@ -3,6 +3,7 @@ Shader "Custom/TopSideCubeShaderMathRippleTess"
     Properties
     {
         _BaseColor("BaseColor", Color) = (1, 1, 1, 1)
+        [MainTexture]
         _MainTexture("Top Texture", 2D) = "white" {}
         _SideTexture("Side Texture", 2D) = "white" {}
 

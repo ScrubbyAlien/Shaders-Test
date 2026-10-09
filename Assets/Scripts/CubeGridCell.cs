@@ -11,6 +11,8 @@ public class CubeGridCell : MonoBehaviour
 
     [SerializeField]
     private MeshRenderer meshRenderer;
+    [SerializeField]
+    private MeshFilter meshFilter;
     [Header("Materials")]
     [SerializeField]
     private Material highlight;
@@ -28,6 +30,13 @@ public class CubeGridCell : MonoBehaviour
         this.cellIndexInGrid = gridPosition;
         this.tile = tile;
         meshRenderer.SetSharedMaterials(new() { tile.material, noHighlight });
+        // pass cell coord to mesh for use in shader
+        Vector2[] uv2 = meshFilter.mesh.uv2;
+        for (int i = 0; i < uv2.Length; i++) {
+            uv2[i].x = gridPosition.x;
+            uv2[i].y = gridPosition.y;
+        }
+        meshFilter.mesh.uv2 = uv2;
         baseWorldPosition = transform.position;
         return this;
     }
