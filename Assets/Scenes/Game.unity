@@ -197,7 +197,8 @@ MonoBehaviour:
   gridNavigators:
   - {fileID: 949814595}
   - {fileID: 829141185}
-  highlightMode: 1
+  - {fileID: 1902137158}
+  highlightMode: 0
 --- !u!4 &346745107
 Transform:
   m_ObjectHideFlags: 0
@@ -531,6 +532,12 @@ MonoBehaviour:
   gridGPUBuffer: {fileID: 1902137159}
   cubeGridNavigatorGPUBuffer: {fileID: 1902137158}
   tileGPUBuffer: {fileID: 11400000, guid: b2259173e0e4a434ab84f095ec1e6a8a, type: 2}
+  computeRippleShader: {fileID: 7200000, guid: 5ad6128175f671d48b0c1ba1b301a8a3, type: 3}
+  GPUBufferParams:
+    amplitude: 0.3
+    frequency: 5
+    range: 4
+    propagationSpeed: 10
 --- !u!4 &709360739
 Transform:
   m_ObjectHideFlags: 0
@@ -540,9 +547,9 @@ Transform:
   m_GameObject: {fileID: 709360737}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -4.7599936, y: -2.3111868, z: 0.45959413}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

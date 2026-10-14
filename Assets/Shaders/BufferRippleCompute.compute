@@ -1,0 +1,85 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel ComputeRipple
+#include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
+
+static int2 NEIGHBOUR_COORDS[8] = {
+    int2(0, 1),
+    int2(1, 0),
+    int2(-1, 0),
+    int2(0, -1),
+    int2(1, 1),
+    int2(1, -1),
+    int2(-1, -1),
+    int2(-1, 1)
+};
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+/// x: freq, y: range, z: propSpeed
+uniform float3 params;
+uniform float2 gridSize;
+uniform int2 originCoord;
+uniform RWStructuredBuffer<float> buffer;
+
+uniform RWStructuredBuffer<float> debugBuffer;
+
+struct CoordNeighbours {
+    int2 coords[8];
+};
+
+int LinearCoord(float2 coord) {
+    return coord.x + coord.y * gridSize.x;
+}
+
+CoordNeighbours Neighbours(float2 coord) {
+    int2 intCoord = int2(coord.x, coord.y);
+    CoordNeighbours neighbours;
+    [unroll]for (int i = 0; i < 8; ++i) {
+        int2 neighbourCoord = NEIGHBOUR_COORDS[i] + intCoord;
+        int oobx = step(0, neighbourCoord.x) * step(neighbourCoord.x, gridSize.x);
+        int ooby = step(0, neighbourCoord.y) * step(neighbourCoord.y, gridSize.y);
+        int oob = ((oobx * ooby) * 2) - 1; // negative if out of bounds give invalid neighbour negative components
+        neighbourCoord = neighbourCoord * oob;
+        neighbours.coords[i] = neighbourCoord;
+    }
+    return neighbours;
+}
+
+[numthreads(4,4,1)]
+void ComputeRipple(uint3 id : SV_DispatchThreadID) {
+    int index = LinearCoord(id.xy);
+    float waveProgress = buffer[index];
+
+    if (waveProgress < 0) return; // wave is not here
+
+    waveProgress += unity_DeltaTime.x * params.x * PI; // x = freq
+
+
+    int2 neighbours[8] = Neighbours(id.xy).coords;
+    if (waveProgress >= PI * params.x / params.z) { // orthogonal neighbours
+        [unroll]for (int i = 0; i < 4; ++i) {
+            int2 neighbourCoord = neighbours[i];
+            if (neighbourCoord.x < 0 || neighbourCoord.y < 0) continue;
+            float neighbourProgress = buffer[LinearCoord(neighbourCoord)];
+            float dist = distance(originCoord, neighbourCoord);
+            if (neighbourProgress < 0 && dist <= params.y) {
+                buffer[LinearCoord(neighbourCoord)] = 0;
+            }
+        }
+    }
+
+    if (waveProgress >= PI * params.x / (params.z * INV_SQRT2)) { // diagonal neighbours
+        [unroll]for (int i = 4; i < 8; ++i) {
+            int2 neighbourCoord = neighbours[i];
+            if (neighbourCoord.x < 0 || neighbourCoord.y < 0) continue;
+            float neighbourProgress = buffer[LinearCoord(neighbourCoord)];
+            float dist = distance(originCoord, neighbourCoord);
+            if (neighbourProgress < 0 && dist <= params.y) {
+                buffer[LinearCoord(neighbourCoord)] = 0;
+            }
+        }
+    }
+
+
+    buffer[index] = waveProgress;
+}

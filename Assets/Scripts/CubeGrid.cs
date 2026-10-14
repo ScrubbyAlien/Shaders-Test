@@ -12,15 +12,17 @@ public class CubeGrid : MonoBehaviour
     private CubeGridCell baseCubeCellPrefab;
     [SerializeField]
     private float heightScale;
-    
+
     private float xOffset => -0.5f + cubeGridMap.mapSize.x / 2f;
     private float yOffset => -0.5f + cubeGridMap.mapSize.y / 2f;
     private Vector2Int min => cubeGridMap.minPosition;
 
     private CubeGridCell[,] cubeCells;
 
-    public Vector2 size => (Vector2Int)cubeGridMap.tilemap.cellBounds.size;
-    
+    public Vector2 size => sizeInt;
+    public Vector2Int sizeInt => (Vector2Int)cubeGridMap.tilemap.cellBounds.size;
+    public int area => (int)size.x * (int)size.y;
+
     private void Start() {
         Create();
     }
@@ -39,11 +41,11 @@ public class CubeGrid : MonoBehaviour
 
     private Vector3 GetCenteredPosition(Vector3Int tilemapPosition) {
         return new Vector3(
-            tilemapPosition.x - min.x - xOffset, 
-            tilemapPosition.z * heightScale, 
+            tilemapPosition.x - min.x - xOffset,
+            tilemapPosition.z * heightScale,
             tilemapPosition.y - min.y - yOffset);
     }
-    
+
     private CubeGridCell CreateCellFromTile(Vector3 position, Vector3Int cellPosition, CubeGridTile tile) {
         CubeGridCell cell = Instantiate(baseCubeCellPrefab, transform);
         cell.transform.position = position;
@@ -59,7 +61,7 @@ public class CubeGrid : MonoBehaviour
             Gizmos.DrawCube(position, Vector3.one * 0.99f);
         }
     }
-    
+
     private static readonly Vector2Int[] neighbours = {
         new Vector2Int(1, 0),
         new Vector2Int(0, 1),
@@ -72,7 +74,7 @@ public class CubeGrid : MonoBehaviour
         if (coord.y < 0 || coord.y >= cubeCells.GetLength(1)) return false;
         return true;
     }
-    
+
     public bool GetCell(Vector3Int coord, out CubeGridCell cell) {
         cell = null;
         if (!CoordInBounds(coord)) return false;
@@ -80,7 +82,7 @@ public class CubeGrid : MonoBehaviour
         if (!cell) return false;
         return true;
     }
-    
+
     public IEnumerable<CubeGridCell> GetNeighbours(Vector3Int coord) {
         foreach (Vector2Int neighbourOffset in neighbours) {
             Vector3Int neighbourCoord = coord + (Vector3Int)neighbourOffset;
@@ -102,7 +104,7 @@ public class CubeGrid : MonoBehaviour
                 float sqrDistanceToSurfaceCenter = (cell.XYCenter() - cellSurfaceCenter).sqrMagnitude;
                 if (sqrDistanceToSurfaceCenter <= radius * radius) {
                     yield return cubeCells[x, y];
-                }                          
+                }
             }
         }
     }

@@ -5,12 +5,6 @@ Shader "Custom/TopSideCubeShaderBufferRipple"
         _BaseColor("BaseColor", Color) = (1, 1, 1, 1)
         _MainTex("Top Texture", 2D) = "white" {}
         _SideTexture("Side Texture", 2D) = "white" {}
-
-        [Header(Ripple Settings)] [Space]
-        _Amplitude("Amplitude", Float) = 0.5
-        _Frequency("Frequency", Float) = 1
-        _Range("Range", Float) = 1
-        _PropagationSpeed("Propagation Speed", Float) = 1
     }
     SubShader
     {
@@ -35,6 +29,8 @@ Shader "Custom/TopSideCubeShaderBufferRipple"
             #pragma vertex Vertex
             #pragma fragment Fragment
 
+            #pragma target 5.0
+
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "effects.hlsl"
 
@@ -42,29 +38,22 @@ Shader "Custom/TopSideCubeShaderBufferRipple"
                 half4 _BaseColor;
                 float4 _MainTex_ST;
                 float4 _SideTexture_ST;
-                float _Amplitude;
-                float _Frequency;
-                float _WaveLength;
-                float _Range;
-                float _SettleFactor;
-                float _PropagationSpeed;
             CBUFFER_END
 
             TEXTURE2D(_MainTex);
             TEXTURE2D(_SideTexture);
             SAMPLER(sampler_MainTex);
 
-            uniform float4 Origin;
+            uniform float Amplitude;
             uniform float2 GridSize;
-            uniform float GridBuffer[1000];
+            uniform StructuredBuffer<float> GridBuffer;
 
-            float GetGridBufferElement(float2 cellCoord) {
-                return GridBuffer[cellCoord.y * GridSize.x + cellCoord.x];
+            int LinearCoord(float2 cellCoord) {
+                return cellCoord.y * GridSize.x + cellCoord.x;
             }
 
-            void SetGridBufferElement(float2 cellCoord, float setValue) {
-                uint2 coord = (cellCoord.x, cellCoord.y);
-                // GridBuffer[coord] = setValue;
+            float GetGridBufferElement(float2 cellCoord) {
+                return GridBuffer[LinearCoord(cellCoord)];
             }
 
             struct VertexInput { // geometry vertex attributes: normal, color, uv, etc.
@@ -87,9 +76,10 @@ Shader "Custom/TopSideCubeShaderBufferRipple"
 
                 float3 worldPos = TransformObjectToWorld(input.positionLocal);
                 float gridState = GetGridBufferElement(input.cellCoord);
-                // gridState += 1 + unity_DeltaTime.x;
-                float3 newWorldPos = float3(worldPos.x, worldPos.y + gridState, worldPos.z);
-                // SetGridBufferElement(input.cellCoord, gridState);
+                float belowZero = step(0, gridState);
+                float abovePI = step(gridState, PI);
+                float modifier = Amplitude * sin(gridState) * belowZero * abovePI;
+                float3 newWorldPos = float3(worldPos.x, worldPos.y + modifier, worldPos.z);
 
                 output.positionClip = TransformWorldToHClip(newWorldPos);
                 output.normalLocal = input.normalLocal;

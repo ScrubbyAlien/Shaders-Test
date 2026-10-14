@@ -56,11 +56,11 @@ public class CubeGridCell : MonoBehaviour
 
     public void Dehighlight() {
         meshRenderer.SetSharedMaterials(new() { tile.material, noHighlight });
-
     }
 
     public void Bobble(float time, float height) {
         if (effected) return;
+
         StartCoroutine(BobbleEffect(time, height));
     }
 
@@ -71,6 +71,7 @@ public class CubeGridCell : MonoBehaviour
         Vector3 originalPos = transform.position;
         // float maxY = transform.position.y + height;
         // float minY = transform.position.y - height;
+
         while (Time.time < endtime) {
             float normalizedTime = Mathf.Lerp(0, Mathf.PI, (Time.time - startTime) / time);
             float nextHeight = Mathf.Sin(normalizedTime) * height;
