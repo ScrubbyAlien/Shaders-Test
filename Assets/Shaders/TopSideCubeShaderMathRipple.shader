@@ -63,6 +63,7 @@ Shader "Custom/TopSideCubeShaderMathRipple"
                 float3 positionLocal : POSITION;
                 float3 normalLocal : NORMAL;
                 float2 uv : TEXCOORD0;
+                float2 xycenter : TEXCOORD6;
             };
 
             struct VertexOutput { // transformed data
@@ -75,8 +76,8 @@ Shader "Custom/TopSideCubeShaderMathRipple"
                 VertexOutput output = (VertexOutput)0;
 
                 float3 worldPos = TransformObjectToWorld(input.positionLocal);
-                float rippleHeight = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, worldPos.xz, Origin.xz,
-                                                           _Frequency, _Amplitude, 0.7);
+                float rippleHeight = CalculateRippleHeight(StartTime, _PropagationSpeed, _Range, input.xycenter,
+                                                           Origin.xz, _Frequency, _Amplitude, 0);
                 float3 newWorldPos = float3(worldPos.x, worldPos.y + rippleHeight, worldPos.z);
 
                 output.positionClip = TransformWorldToHClip(newWorldPos);

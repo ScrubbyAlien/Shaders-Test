@@ -36,13 +36,27 @@ CoordNeighbours Neighbours(float2 coord) {
     CoordNeighbours neighbours;
     [unroll]for (int i = 0; i < 8; ++i) {
         int2 neighbourCoord = NEIGHBOUR_COORDS[i] + intCoord;
-        int oobx = step(0, neighbourCoord.x) * step(neighbourCoord.x, gridSize.x);
+        int oobx = step(0, neighbourCoord.x) * step(neighbourCoord.x, gridSize.x - 1);
         int ooby = step(0, neighbourCoord.y) * step(neighbourCoord.y, gridSize.y);
         int oob = ((oobx * ooby) * 2) - 1; // negative if out of bounds give invalid neighbour negative components
         neighbourCoord = neighbourCoord * oob;
         neighbours.coords[i] = neighbourCoord;
     }
     return neighbours;
+}
+
+inline static void ScanNeighbours(int2 neighbours[8], int start, int until, float progress, float threshold) {
+    if (progress >= threshold) { // orthogonal neighbours
+        [unroll]for (int i = start; i < until; ++i) {
+            int2 neighbourCoord = neighbours[i];
+            if (neighbourCoord.x < 0 || neighbourCoord.y < 0) continue;
+            float neighbourProgress = buffer[LinearCoord(neighbourCoord)];
+            float dist = distance(originCoord, neighbourCoord);
+            if (neighbourProgress < 0 && dist <= params.y) {
+                buffer[LinearCoord(neighbourCoord)] = 0;
+            }
+        }
+    }
 }
 
 [numthreads(4,4,1)]
@@ -56,30 +70,9 @@ void ComputeRipple(uint3 id : SV_DispatchThreadID) {
 
 
     int2 neighbours[8] = Neighbours(id.xy).coords;
-    if (waveProgress >= PI * params.x / params.z) { // orthogonal neighbours
-        [unroll]for (int i = 0; i < 4; ++i) {
-            int2 neighbourCoord = neighbours[i];
-            if (neighbourCoord.x < 0 || neighbourCoord.y < 0) continue;
-            float neighbourProgress = buffer[LinearCoord(neighbourCoord)];
-            float dist = distance(originCoord, neighbourCoord);
-            if (neighbourProgress < 0 && dist <= params.y) {
-                buffer[LinearCoord(neighbourCoord)] = 0;
-            }
-        }
-    }
 
-    if (waveProgress >= PI * params.x / (params.z * INV_SQRT2)) { // diagonal neighbours
-        [unroll]for (int i = 4; i < 8; ++i) {
-            int2 neighbourCoord = neighbours[i];
-            if (neighbourCoord.x < 0 || neighbourCoord.y < 0) continue;
-            float neighbourProgress = buffer[LinearCoord(neighbourCoord)];
-            float dist = distance(originCoord, neighbourCoord);
-            if (neighbourProgress < 0 && dist <= params.y) {
-                buffer[LinearCoord(neighbourCoord)] = 0;
-            }
-        }
-    }
-
+    ScanNeighbours(neighbours, 0, 4, waveProgress, PI * params.x / params.z); // orthogonal
+    ScanNeighbours(neighbours, 4, 8, waveProgress, PI * params.x / (params.z * INV_SQRT2)); // diagonal
 
     buffer[index] = waveProgress;
 }

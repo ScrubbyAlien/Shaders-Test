@@ -31,12 +31,17 @@ public class CubeGridCell : MonoBehaviour
         this.tile = tile;
         meshRenderer.SetSharedMaterials(new() { tile.material, noHighlight });
         // pass cell coord to mesh for use in shader
-        Vector2[] uv2 = meshFilter.mesh.uv2;
+        Vector2[] uv2 = new Vector2[meshFilter.mesh.vertices.Length];
+        Vector2[] uv7 = new Vector2[meshFilter.mesh.vertices.Length];
+        Vector3 center = XYCenter();
         for (int i = 0; i < uv2.Length; i++) {
             uv2[i].x = gridPosition.x;
             uv2[i].y = gridPosition.y;
+            uv7[i].x = center.x;
+            uv7[i].y = center.y;
         }
         meshFilter.mesh.uv2 = uv2;
+        meshFilter.mesh.uv7 = uv7;
         baseWorldPosition = transform.position;
         return this;
     }
