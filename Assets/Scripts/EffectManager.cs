@@ -7,7 +7,7 @@ using UnityEngine;
 public class EffectManager : MonoBehaviour
 {
     [SerializeField]
-    private Tester.RippleMode mode;
+    public Tester.RippleMode mode;
 
     [Header("CPU")]
     [SerializeField]
@@ -43,6 +43,8 @@ public class EffectManager : MonoBehaviour
     [SerializeField]
     private RippleParams GPUBufferParams;
 
+    public bool autoTesting;
+
     private void SetDefaultGridData() {
         float[] defaultData = new float[gridGPUBuffer.area];
         for (int i = 0; i < gridBuffer.count; i++) {
@@ -64,7 +66,7 @@ public class EffectManager : MonoBehaviour
         return minMultiple;
     }
 
-    private void SetCorrectGridActive() {
+    public void SetCorrectGridActive() {
         switch (mode) {
             case Tester.RippleMode.CPUSort:
                 gridCPU.gameObject.SetActive(true);
@@ -132,14 +134,16 @@ public class EffectManager : MonoBehaviour
     }
 
     private void Update() {
+        if (mode == Tester.RippleMode.GPUBuffer) {
+            computeRippleShader.Dispatch(0, groupNums.x, groupNums.y, 1);
+        }
+
+        if (autoTesting) return;
+
         SetCorrectGridActive();
 
         // debugBuffer.GetData(debugData);
         // Debug.Log(debugData[0]);
-
-        if (mode == Tester.RippleMode.GPUBuffer) {
-            computeRippleShader.Dispatch(0, groupNums.x, groupNums.y, 1);
-        }
 
         if (Input.GetMouseButtonDown(0)) {
             // gridBuffer.GetData(printData);
@@ -147,26 +151,50 @@ public class EffectManager : MonoBehaviour
 
             switch (mode) {
                 case Tester.RippleMode.CPUSort:
-                    if (cubeGridNavigatorCPU.currentCell) {
-                        StartCoroutine(RippleCircle(cubeGridNavigatorCPU.currentCell));
+                    if (cubeGridNavigatorCPU.HasCurrentCell(out CubeGridCell sortCell)) {
+                        ExecuteCPUSortEffect(sortCell);
                     }
                     break;
                 case Tester.RippleMode.GPUMath:
-                    if (cubeGridNavigatorGPUMath.currentCell) {
-                        tileGPUMath.material.SetFloat("StartTime", Time.time);
-                        tileGPUMath.material.SetVector("Origin", cubeGridNavigatorGPUMath.currentCell.SurfaceCenter());
+                    if (cubeGridNavigatorGPUMath.HasCurrentCell(out CubeGridCell mathCell)) {
+                        ExecuteGPUMathEffect(mathCell);
                     }
                     break;
                 case Tester.RippleMode.GPUBuffer:
-                    if (cubeGridNavigatorGPUBuffer.currentCell) {
-                        Vector2Int coord = (Vector2Int)cubeGridNavigatorGPUBuffer.currentCell.cellIndexInGrid;
-                        SetNewEffectGridData(coord);
-                        gridBuffer.SetData(gridData);
-                        computeRippleShader.SetInts("originCoord", coord.x, coord.y);
+                    if (cubeGridNavigatorGPUBuffer.HasCurrentCell(out CubeGridCell bufferCell)) {
+                        ExecuteGPUBufferEffect(bufferCell);
                     }
                     break;
             }
         }
+    }
+
+    public void ExecuteCPUSortEffect(CubeGridCell cubeCell) {
+        StartCoroutine(RippleCircle(cubeCell));
+    }
+    public void ExecuteCPUSortEffect(Vector2Int coord) {
+        gridCPU.GetCell(coord, out CubeGridCell cell);
+        ExecuteCPUSortEffect(cell);
+    }
+
+    public void ExecuteGPUMathEffect(CubeGridCell cubeCell) {
+        tileGPUMath.material.SetFloat("StartTime", Time.time);
+        tileGPUMath.material.SetVector("Origin", cubeCell.SurfaceCenter());
+    }
+    public void ExecuteGPUMathEffect(Vector2Int coord) {
+        gridGPUMath.GetCell(coord, out CubeGridCell cell);
+        ExecuteGPUMathEffect(cell);
+    }
+
+    public void ExecuteGPUBufferEffect(CubeGridCell cubeCell) {
+        Vector2Int coord = (Vector2Int)cubeCell.cellIndexInGrid;
+        SetNewEffectGridData(coord);
+        gridBuffer.SetData(gridData);
+        computeRippleShader.SetInts("originCoord", coord.x, coord.y);
+    }
+    public void ExecuteGPUBufferEffect(Vector2Int coord) {
+        gridGPUBuffer.GetCell(coord, out CubeGridCell cell);
+        ExecuteGPUBufferEffect(cell);
     }
 
     private IEnumerator RippleCircle(CubeGridCell originCell) {

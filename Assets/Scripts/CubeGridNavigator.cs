@@ -17,6 +17,11 @@ public class CubeGridNavigator : MonoBehaviour
     private CubeGridCell currentlyHoveredCell;
     public CubeGridCell currentCell => currentlyHoveredCell;
 
+    public bool HasCurrentCell(out CubeGridCell cell) {
+        cell = currentCell;
+        return cell;
+    }
+
     private void Awake() {
         oCamera = Camera.main;
         grid = GetComponent<CubeGrid>();

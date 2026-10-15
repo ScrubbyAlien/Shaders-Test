@@ -83,6 +83,10 @@ public class CubeGrid : MonoBehaviour
         return true;
     }
 
+    public bool GetCell(Vector2Int coord, out CubeGridCell cell) {
+        return GetCell((Vector3Int)coord, out cell);
+    }
+
     public IEnumerable<CubeGridCell> GetNeighbours(Vector3Int coord) {
         foreach (Vector2Int neighbourOffset in neighbours) {
             Vector3Int neighbourCoord = coord + (Vector3Int)neighbourOffset;
